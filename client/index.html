@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html ng-app="gossipGirl">
+  <head>
+
+    <base href="/">
+
+    <title>Gossip Girl</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+
+    <!-- build:css app.css -->
+
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/angular-material/angular-material.css">
+    <!-- endinject -->
+
+    <link rel="stylesheet" href="styles/css/app.css">
+
+    <!-- endbuild -->
+
+  </head>
+  <body>
+
+    <div ng-view></div>
+
+    <script src="socket.io/socket.io.js"></script>
+
+    <!-- build:js app.js -->
+
+    <!-- bower:js -->
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
+    <script src="bower_components/angular-socket-io/socket.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
+    <script src="bower_components/angular-aria/angular-aria.js"></script>
+    <script src="bower_components/angular-messages/angular-messages.js"></script>
+    <script src="bower_components/lodash/lodash.js"></script>
+    <script src="bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
+    <script src="bower_components/async/lib/async.js"></script>
+    <script src="bower_components/angular-material/angular-material.js"></script>
+    <script src="bower_components/restangular/dist/restangular.js"></script>
+    <!-- endinject -->
+
+    <!-- inject:js -->
+    <script src="app.js"></script>
+    <script src="views/me/me.js"></script>
+    <script src="views/me/me.controller.js"></script>
+    <script src="views/watchers/watchers.js"></script>
+    <script src="views/watchers/watchers.controller.js"></script>
+    <script src="views/home/home.js"></script>
+    <script src="views/home/home.controller.js"></script>
+    <script src="services/watcher/watcher.js"></script>
+    <script src="services/user/user.js"></script>
+    <script src="services/socket/socket.service.js"></script>
+    <script src="services/storage/storage.js"></script>
+    <script src="directives/toolbar/toolbar.directive.js"></script>
+    <!-- endinject -->
+
+    <!-- endbuild -->
+
+  </body>
+</html>

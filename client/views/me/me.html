@@ -1,0 +1,61 @@
+<div>
+  <toolbar />
+</div>
+<md-progress-linear md-mode="indeterminate" class="md-warn" ng-show="vm.showProgressBar"></md-progress-linear>
+<md-content layout="row" layout-sm="column" layout-margin layout-padding>
+  <md-card layout-fill layout-margin>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-headline">Update your details</span>
+      </md-card-title-text>
+    </md-card-title>
+    <div layout="column" layout-align="center center" layout-fill>
+      <form layout="column" ng-submit="vm.updateUser()" layout-fill>
+        <div layout-gt-sm="row">
+          <md-input-container class="md-block" flex-gt-sm>
+            <label>Name</label>
+            <input type="text" ng-model="vm.user.name">
+          </md-input-container>
+        </div>
+        <div layout-gt-sm="row">
+          <md-input-container class="md-block" flex-gt-sm>
+            <label>Phone</label>
+            <input type="text" ng-model="vm.user.phone">
+          </md-input-container>
+        </div>
+        <div layout-gt-sm="row">
+          <md-input-container class="md-block" flex-gt-sm>
+            <label>Address</label>
+            <textarea ng-model="vm.user.address" md-maxlength="150" rows="3" md-select-on-focus></textarea>
+          </md-input-container>
+        </div>
+        <div layout-gt-sm="row">
+          <md-input-container class="md-block" flex-gt-sm>
+            <md-button type="submit" class="md-raised md-primary" layout-fill>Update</md-button>
+          </md-input-container>
+        </div>
+      </form>
+    </div>
+  </md-card>
+
+  <div></div>
+
+  <md-card layout-fill layout-margin>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-headline">Your friend's updates</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-list flex>
+      <md-list-item class="md-3-line md-long-text" ng-repeat="change in vm.changes">
+        <div class="md-list-item-text">
+          <h3>{{ change.user.email }}</h3>
+          <p ng-repeat="update in change.updates">
+            {{ update.field }} : <span class="old">{{ update.old }}</span> -> <span class="new">{{ update.new }}</span>
+          </p>
+        </div>
+        <md-divider></md-divider>
+      </md-list-item>
+    </md-list>
+  </md-card>
+</md-content>

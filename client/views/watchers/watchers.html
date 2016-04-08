@@ -1,0 +1,30 @@
+<div>
+  <toolbar />
+</div>
+<md-progress-linear md-mode="indeterminate" class="md-warn" ng-show="vm.showProgressBar"></md-progress-linear>
+<md-content layout="row" layout-padding>
+  <div layout-margin layout="column">
+    <div layout="row">
+      <div class="positive"></div>
+      <div layout-margin>Watching</div>
+    </div>
+    <div layout="row">
+      <div class="negative"></div>
+      <div layout-margin>Not Watching</div>
+    </div>
+  </div>
+
+  <md-divider></md-divider>
+
+  <div layout="row" layout-wrap layout-margin>
+    <md-card ng-repeat="user in vm.users" ng-style="{'background-color': vm.getBackgroundColor(user._id)}" ng-click="vm.openSelectFieldDialog($event, user._id)">
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">{{ user.name }}</span>
+          <span class="md-subhead">{{ user.email }}</span>
+        </md-card-title-text>
+      </md-card-title>
+    </md-card>
+  </div>
+
+</md-content>

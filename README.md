@@ -87,6 +87,10 @@ Launch server tests, using Mocha.
   - **mongoose**
     - Definitely the best mongoDB ODM
 
+  - **nedb**
+    - In-memory database needed for storing sockets
+    - Mongo like structuring
+
   - **mubsub**
     - *mongo-watch* - Deprecated
     - *mongoose-watch* - Nothing more than polling

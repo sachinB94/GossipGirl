@@ -24,7 +24,7 @@ router.get('/watching/:collection',
 );
 
 router.get('/',
-  // middleware.isAuthorized,
+  middleware.isAuthorized,
   controller.getAllWatchers,
   middleware.sendResponse
 );

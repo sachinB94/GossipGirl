@@ -32,10 +32,11 @@ angular.module('gossipGirl')
     Socket.on('updatedUser', function(data) {
       $mdToast.showSimple('Profile updated');
       vm.showProgressBar = false;
-      Storage.setUser(_.assign(data.user, {
-        token: vm.user.token
-      }));
-      vm.user = data.user;
+      var token = vm.user.token;
+      vm.user = _.assign({}, data.user, {
+        token: token
+      });
+      Storage.setUser(vm.user);
     });
 
     Socket.on('change', function(data) {
@@ -45,7 +46,7 @@ angular.module('gossipGirl')
     vm.updateUser = function() {
       vm.showProgressBar = true;
       Socket.emit('updateUser', {
-        user: vm.user
+        user: _.omit(vm.user, 'token')
       });
     };
 

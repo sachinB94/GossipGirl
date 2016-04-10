@@ -6,7 +6,6 @@ var config = require('./config/environment');
 module.exports = function (app) {
 
   // API
-  app.use('/api/changess', require('./api/changes'));
   app.use('/api/watchers', require('./api/watcher'));
   app.use('/api/users', require('./api/user'));
 

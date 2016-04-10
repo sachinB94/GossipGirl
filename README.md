@@ -1,6 +1,6 @@
 <h1 align="center">Gossip Girl</h1>
 
-> *« A mongo watcher - made to perfection »*
+> *« A demo mongo watcher »*
 
 Features:
 
@@ -16,6 +16,28 @@ Features:
     Clone the repo
     npm install && bower install
 
+# Mongo Configuration (Important)
+
+    - Start MongoDB with command
+      ```bash
+      $ mongod --replSet test
+      ```
+      
+      - If an error occurs saying **directory /data/db does not exist**, then create the directory:
+      ```bash
+      $ sudo mkdir -p /data/db
+      ```
+
+      - If an error occurs saying **Unable to create/open lock file: /data/db/mongod.lock errno:13 Permission denied**, then give the appropriate permissions to the directory:
+      ```bash
+      $ sudo chown -R group:user /data/db 
+      ```
+
+    - Start a mongo shell, and configure mongo as follows:
+      ```bash
+      > var config = {_id: "test", members: [{_id: 0, host: "127.0.0.1:27017"}]}
+      > rs.initiate(config)
+      ```
 
 # Manage project
 
@@ -49,26 +71,6 @@ Launch server tests, using Mocha.
   This integrarion guide is tested on Ubuntu 14.04. We don't know whether it will work on other OSs as well.
 
   - Install the module [mongo-oplog-watch](https://www.npmjs.com/package/mongo-oplog-watch). This module watcher for changes (insert, delete and update) in all the collections of the database, and triggers events for the operations.
-  - Start MongoDB with command
-    ```bash
-    $ mongod --replSet test
-    ```
-    
-    - If an error occurs saying **directory /data/db does not exist**, then create the directory:
-    ```bash
-    $ sudo mkdir -p /data/db
-    ```
-
-    - If an error occurs saying **Unable to create/open lock file: /data/db/mongod.lock errno:13 Permission denied**, then give the appropriate permissions to the directory:
-    ```bash
-    $ sudo chown -R group:user /data/db 
-    ```
-
-  - Start a mongo shell, and configure mongo as follows:
-    ```bash
-    > var config = {_id: "test", members: [{_id: 0, host: "127.0.0.1:27017"}]}
-    > rs.initiate(config)
-    ```
 
   - Create a dedicated collection for storing the various watchers, as seen in `server/api/watcher.model.js`. Data is stored through following rules
 
@@ -77,7 +79,7 @@ Launch server tests, using Mocha.
     - `watching` stores the ObjectId of the document in the `Collection`, if the operation is `update`, and
     - `fields` stores the array of fields being watched, if the operation is `update`
 
-  - Open a watcher for syncing changes using `mongo-oplog-watcher` (here in `server/server.js`)
+  - Open a watcher for syncing changes using `mongo-oplog-watch` (here in `server/server.js`)
     - Subscribe to various events as described in documentation of [mongo-oplog-watch](https://www.npmjs.com/package/mongo-oplog-watch)
     - Whenever an event occurs, find the subscriber for the event in the `watchers` collection (here in `server/mongoEventHandler.js`)
     - Notify the subscribers using the architecture being used (here `socket.io` in `server/api/user/user.controller.js`)

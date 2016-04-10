@@ -134,8 +134,8 @@ angular.module('gossipGirl')
 
               // Watcher is removed
               if (watcher.removed) {
-                vm.watchers = _.filter(vm.watchers, function(w) {
-                  return w.watcher !== user._id || w.watching !== listId;
+                _.remove(vm.watchers, function(w) {
+                  return w.watcher === user._id && w.watching === listId;
                 });
               } else {
 

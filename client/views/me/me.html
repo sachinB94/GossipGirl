@@ -49,14 +49,14 @@
     <md-list flex>
       <md-list-item class="md-3-line md-long-text" ng-repeat="change in vm.changes">
         <div ng-if="change.operation === 'update'" class="md-list-item-text">
-          <h3>{{ change.watching.name }} ({{ change.watching.email }})</h3>
+          <h3>Update: {{ change.watching._id }}</h3>
           <h4><b> Collection: </b> {{ change.Collection }}</h4>
           <p ng-repeat="(field, value) in change.updates">
             <b> {{ field }} </b> updated to <span class="new">{{ value }}</span>
           </p>
         </div>
         <div ng-if="change.operation === 'insert'" class="md-list-item-text">
-          <h3 class="new">Insert: {{ change.document.name }} ({{ change.document.email }})</h3>
+          <h3 class="new">Insert: {{ change.document._id }}</h3>
           <p><b> Collection: </b> {{ change.Collection }}</p>
         </div>
         <div ng-if="change.operation === 'delete'" class="md-list-item-text">

@@ -52,7 +52,7 @@
       <md-card ng-repeat="watcher in vm.list" ng-style="{'background-color': vm.getBackgroundColor(watcher._id)}" ng-click="vm.openSelectFieldDialog($event, watcher._id)">
         <md-card-title>
           <md-card-title-text>
-            <span>{{ watcher.watcher.name }} -> <i>watching</i> -> {{ watcher.watching }}</span>
+            <span>{{ watcher.watcher.name }} -> <i>watching</i> -> {{ watcher.watching ? watcher.watching : watcher.operation }}</span>
             <span>for collection <i>{{ watcher.Collection }}</i></span>
           </md-card-title-text>
         </md-card-title>

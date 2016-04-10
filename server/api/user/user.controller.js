@@ -91,7 +91,7 @@ var controller = {
         // Get updated user details
         user: function(cb) {
           if (watcher.watching) {
-            mongoose.connections[0].collections.users.findOne({
+            mongoose.connections[0].collections[watcher.Collection].findOne({
               _id: watcher.watching
             }, cb);
           } else {
@@ -103,7 +103,7 @@ var controller = {
         if (err) {
           return callback(err);
         }
-        if (io.sockets.connected[result.socketModel.socketId]) {
+        if (result.socketModel && io.sockets.connected[result.socketModel.socketId]) {
           if (result.user) {
             var send = _.assign({}, watcher, {
               watching: _.omit(result.user, 'password')

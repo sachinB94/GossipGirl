@@ -18,7 +18,17 @@ exports.test = function(users, next) {
     var watchers = [{
       watcherToken: users[0].token,
       watching: users[1]._id,
-      fields: ['name', 'address']
+      fields: ['name', 'address'],
+      operation: 'update',
+      Collection: 'users'
+    }, {
+      watcherToken: users[0].token,
+      operation: 'insert',
+      Collection: 'users'
+    }, {
+      watcherToken: users[0].token,
+      operation: 'delete',
+      Collection: 'users'
     }];
 
     it('POST /add: should respond with the added watcher object', function(done) {
@@ -44,11 +54,53 @@ exports.test = function(users, next) {
       });
     });
 
-    it('GET /watching: should respond with the watcher object', function(done) {
+    it('GET /watching: should respond with an array of watchers', function(done) {
       async.parallel(watchers.map(function(watcher, index) {
         return function(callback) {
           request(server)
             .get('/api/watchers/watching')
+            .set('Authorization', 'Bearer ' + watcher.watcherToken)
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .end(function(err, res) {
+              if (err) {
+                return done(err);
+              }
+              res.body.should.be.an.instanceof(Array);
+              return callback();
+            });
+        }
+      }), function() {
+        done();
+      });
+    });
+
+    it('GET /watching/:collection: should respond with an array of watchers', function(done) {
+      async.parallel(watchers.map(function(watcher, index) {
+        return function(callback) {
+          request(server)
+            .get('/api/watchers/watching/users')
+            .set('Authorization', 'Bearer ' + watcher.watcherToken)
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .end(function(err, res) {
+              if (err) {
+                return done(err);
+              }
+              res.body.should.be.an.instanceof(Array);
+              return callback();
+            });
+        }
+      }), function() {
+        done();
+      });
+    });
+
+    it('GET /fields: should respond with an array of fields', function(done) {
+      async.parallel(watchers.map(function(watcher, index) {
+        return function(callback) {
+          request(server)
+            .get('/api/watchers/fields')
             .set('Authorization', 'Bearer ' + watcher.watcherToken)
             .expect(200)
             .expect('Content-Type', /json/)

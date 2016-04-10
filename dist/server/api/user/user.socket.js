@@ -3,7 +3,6 @@
 var _ = require('lodash');
 var User = require('./user.model');
 var SocketModel = require('./socket.model');
-var Change = require('../changes/changes.model');
 var Util = require('../util');
 
 /**
@@ -45,39 +44,15 @@ exports.register = function (socket) {
     User.update({
       _id: userId
     }, _.omit(data.user, ['_id', 'email']), {
-      new: false
+      new: true
     }, function(err, user) {
       if (err) {
         socket.emit('error', Util.getMongoError(err));
       } else {
-        var oldUser = user._doc;
-        var newUser = _.assign({}, oldUser, data.user);
 
         // Emit the updated user
         socket.emit('updatedUser', {
-          user: _.omit(newUser, 'password')
-        });
-
-        // Get the updates being watched
-        var updates = _.reduce(newUser, function(result, value, key) {
-          return _.isEqual(value, oldUser[key]) ? result : result.concat(key);
-        }, []);
-        updates = _.pull(updates, '_id', 'token');
-        
-        // Add the changes for updates being watched
-        Change.add({
-          userId: newUser._id,
-          updates: updates.map(function(update) {
-            return {
-              field: update,
-              old: oldUser[update],
-              new: newUser[update]
-            };
-          })
-        }, function(err, change) {
-          if (err) {
-            console.log('err', err);
-          }
+          user: _.omit(user._doc, 'password')
         });
       }
     });
@@ -85,13 +60,5 @@ exports.register = function (socket) {
 
 
   });
-
-  // User.schema.post('save', function (doc) {
-  //   socket.emit('User:save', doc);
-  // });
-
-  // User.schema.post('remove', function (doc) {
-  //   socket.emit('User:remove', doc);
-  // });
 
 };

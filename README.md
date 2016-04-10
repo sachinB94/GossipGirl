@@ -21,7 +21,7 @@ Features:
 
     gulp
 
-**Default task, run the server.** Build `sass` files, inject all scripts and styles to the project, watch them and open your default browser (Socket.io doesn't work).
+**Default task, run the server.** Build `sass` files, inject all scripts and styles to the project, watch them and open your default browser (Socket.io doesn't work, Also browser sync causes weird behaviour if more than one instance is running on the same machine).
 
     npm run start:dev
 
@@ -46,22 +46,42 @@ Launch server tests, using Mocha.
 
 # Integration guide
 
-  - The module `mubsub` does the pub/sub tasks for the `chaanges` collection
-  - First and foremost, you have to create a dedicated collection (called capped collection), here `changes`
-  - server/server.js
-    - Create it's model for working with mongoose
-    - Connect `mubsub` to your database
-    - Create a channel to the capped collection
-    - Subscribe to this channel
-    - Add a event listener for a new document
-    - Whenever a document is inserted, trigger the event handler
-  - user/user.socket.js
-    - Whenever a user inserts an update command,
-      - `watcher` collection is searched for that user
-      - if user found, an entry in `changes` collection is made, with the old and updated fields
-  - api/changes/changes.controller.js (event handler declared here)
-    - For the document inserted, it is checked whether the respective watcher is online
-    - If online, the changes are pushed to that user
+  This integrarion guide is tested on Ubuntu 14.04. We don't know whether it will work on other OSs as well.
+
+  - Install the module [mongo-oplog-watch](https://www.npmjs.com/package/mongo-oplog-watch). This module watcher for changes (insert, delete and update) in all the collections of the database, and triggers events for the operations.
+  - Start MongoDB with command
+    ```bash
+    $ mongod --replSet test
+    ```
+    
+    - If an error occurs saying **directory /data/db does not exist**, then create the directory:
+    ```bash
+    $ sudo mkdir -p /data/db
+    ```
+
+    - If an error occurs saying **Unable to create/open lock file: /data/db/mongod.lock errno:13 Permission denied**, then give the appropriate permissions to the directory:
+    ```bash
+    $ sudo chown -R group:user /data/db 
+    ```
+
+  - Start a mongo shell, and configure mongo as follows:
+    ```bash
+    > var config = {_id: "test", members: [{_id: 0, host: "127.0.0.1:27017"}]}
+    > rs.initiate(config)
+    ```
+
+  - Create a dedicated collection for storing the various watchers, as seen in `server/api/watcher.model.js`. Data is stored through following rules
+
+    - `Collection` is the name of collection being watched,
+    - `operation` is the type of operation (`insert`, `update` or `delete`),
+    - `watching` stores the ObjectId of the document in the `Collection`, if the operation is `update`, and
+    - `fields` stores the array of fields being watched, if the operation is `update`
+
+  - Open a watcher for syncing changes using `mongo-oplog-watcher` (here in `server/server.js`)
+    - Subscribe to various events as described in documentation of [mongo-oplog-watch](https://www.npmjs.com/package/mongo-oplog-watch)
+    - Whenever an event occurs, find the subscriber for the event in the `watchers` collection (here in `server/mongoEventHandler.js`)
+    - Notify the subscribers using the architecture being used (here `socket.io` in `server/api/user/user.controller.js`)
+
 
 # Why these frameworks?
 
@@ -91,8 +111,6 @@ Launch server tests, using Mocha.
     - In-memory database needed for storing sockets
     - Mongo like structuring
 
-  - **mubsub**
-    - *mongo-watch* - Deprecated
-    - *mongoose-watch* - Nothing more than polling
-    - *native* - Too much work, and can't be completely automated
-    - Perfect option, and really fast
+  - **mongo-oplog-watch**
+    - *mongo-oplog* - Result is weirdly formatted
+    - Better outputs, wrote specifically for this

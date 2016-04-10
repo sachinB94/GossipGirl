@@ -9,10 +9,12 @@ var path = require('path');
 var jwt = require('jsonwebtoken');
 var async = require('async');
 var mubsub = require('mubsub');
+var mongoWatch = require('mongo-oplog-watch');
 
-var changesController = require('./api/changes/changes.controller');
+var mongoEventHandler = require('./mongoEventHandler');
+var userController = require('./api/user/user.controller.js');
 
-mongoose.connect(config.mongo.uri, config.mongo.options);
+var db = mongoose.connect(config.mongo.uri, config.mongo.options);
 
 var app = express();
 var server = require('http').createServer(app);
@@ -24,22 +26,37 @@ require('./config/express')(app);
 /**
  * open a watcher for syncing changes
  */
-var client = mubsub(config.mongo.uri, config.mongo.options);
-var channel = client.channel('changes', {
-  size: 1024,
-  max: 1000
+mongoose.connection.on('connected', function(data) {
+  var watcher = mongoWatch(config.mongo.uri, config.mongo.options);
+
+  watcher.on('insert', function(doc) {
+    mongoEventHandler.insert(doc, function(data) {
+      userController.notifyWatchers(data, doc, socket);
+    });
+  });
+   
+  watcher.on('update', function (doc) {
+    mongoEventHandler.update(doc, function(data) {
+      userController.notifyWatchers(data, doc, socket);
+    });
+  });
+   
+  watcher.on('delete', function (doc) {
+    mongoEventHandler.delete(doc, function(data) {
+      userController.notifyWatchers(data, doc, socket);
+    });
+  });
+   
+  watcher.on('error', function (error) {
+    console.log('error', error);
+  });
+   
+  watcher.on('end', function () {
+    console.log('Stream ended');
+  });
+   
 });
 
-client.on('error', console.error);
-channel.on('error', console.error);
-
-channel.subscribe(function(message) {
-  // Channel subscribed
-});
-
-channel.on('document', function (document) {
-  changesController.changeMade(document, socket);
-});
 
 /**
  * Middleware for decoding the JWT token, if present

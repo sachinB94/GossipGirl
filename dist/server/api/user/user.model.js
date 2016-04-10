@@ -1,6 +1,6 @@
 'use strict';
 
-var mongooseWatch = require('mongoose-watch');
+var _ = require('lodash');
 var validate = require('mongoose-validator');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
@@ -72,6 +72,14 @@ module.exports = {
 
   remove: function(condition, next) {
     User.remove(condition, next);
+  },
+
+  getFields: function(next) {
+    var fields = Object.keys(UserSchema.paths);
+    _.remove(fields, function(field) {
+      return field === '__v' || field === '_id' || field === 'password';
+    });
+    return next(null, fields);
   }
 };
 

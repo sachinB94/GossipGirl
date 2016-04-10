@@ -1,7 +1,11 @@
 'use strict';
 
 var _ = require('lodash');
+var async = require('async');
+var mongoose = require('mongoose');
+
 var User = require('./user.model');
+var SocketModel = require('./socket.model');
 var Util = require('../util');
 
 var controller = {
@@ -51,6 +55,75 @@ var controller = {
       }
       req.data = users;
       return next();
+    });
+  },
+
+  /**
+   * Get all fields in the schema
+   */
+  getFields: function(req, res, next) {
+    User.getFields(function(err, fields) {
+      if (err) {
+        return next(Util.getMongoError(err)); 
+      }
+      req.data = fields;
+      return next();
+    });
+  },
+
+  /**
+   * Notify the watchers of changes
+   */
+  notifyWatchers: function(watchers, doc, io) {
+
+    // Map each watcher
+    async.map(watchers, function(watcher, callback) {
+
+      async.parallel({
+
+        // Get Socket of the user
+        socketModel: function(cb) {
+          SocketModel.findOne({
+            userId: watcher.watcher._id.toString()
+          }, cb);
+        },
+
+        // Get updated user details
+        user: function(cb) {
+          if (watcher.watching) {
+            mongoose.connections[0].collections.users.findOne({
+              _id: watcher.watching
+            }, cb);
+          } else {
+            return cb(null, null);
+          }
+        }
+
+      }, function(err, result) {
+        if (err) {
+          return callback(err);
+        }
+        if (io.sockets.connected[result.socketModel.socketId]) {
+          if (result.user) {
+            var send = _.assign({}, watcher, {
+              watching: _.omit(result.user, 'password')
+            });
+          } else {
+            var send = _.assign({}, watcher, {
+              document: _.omit(doc.object, 'password')
+            });
+          }
+
+          // Send Notification
+          io.sockets.connected[result.socketModel.socketId].emit('change', send);
+        }
+        return callback(null);
+      });
+    }, function(err) {
+      if (err) {
+        console.log('err', err);
+      }
+      // All watchers notified
     });
   }
   

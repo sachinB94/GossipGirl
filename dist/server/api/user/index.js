@@ -27,4 +27,10 @@ router.get('/',
   middleware.sendResponse
 );
 
+router.get('/fields',
+  middleware.isAuthorized,
+  controller.getFields,
+  middleware.sendResponse
+);
+
 module.exports = router;

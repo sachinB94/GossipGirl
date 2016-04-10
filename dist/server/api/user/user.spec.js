@@ -86,6 +86,21 @@ exports.test = function(next) {
           }
           res.body.should.be.an.instanceof(Array);
           done();
+        });
+    });
+
+    it('GET /fields: should respond with an array of fields', function(done) {
+      request(server)
+        .get('/api/users/fields')
+        .set('Authorization', 'Bearer ' + users[0].token)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end(function(err, res) {
+          if (err) {
+            return done(err);
+          }
+          res.body.should.be.an.instanceof(Array);
+          done();
           return next(users);
         });
     });

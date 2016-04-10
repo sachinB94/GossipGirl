@@ -2,6 +2,8 @@
 
 var _ = require('lodash');
 var async = require('async');
+var mongoose = require('mongoose');
+
 var User = require('./user.model');
 var SocketModel = require('./socket.model');
 var Util = require('../util');
@@ -89,7 +91,7 @@ var controller = {
         // Get updated user details
         user: function(cb) {
           if (watcher.watching) {
-            User.findOne({
+            mongoose.connections[0].collections.users.findOne({
               _id: watcher.watching
             }, cb);
           } else {

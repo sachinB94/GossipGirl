@@ -1,13 +1,19 @@
 'use strict';
 
+var mongoose = require('mongoose');
 var config = require('./config/environment');
 
 module.exports = function (app) {
 
   // API
-  app.use('/api/changess', require('./api/changes'));
   app.use('/api/watchers', require('./api/watcher'));
   app.use('/api/users', require('./api/user'));
+
+  app.route('/api/collections')
+    .get(function(req, res) {
+      var collections = Object.keys(mongoose.connections[0].collections);
+      res.send(collections);
+    });
 
   // Static data
   app.route('/:url(api|app|bower_components|assets)/*')

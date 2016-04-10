@@ -17,7 +17,7 @@
               <span ng-if="isChecked()">Un-</span>Select All
             </md-checkbox>
           </div>
-          <div class="demo-select-all-checkboxes" flex="100" ng-repeat="field in WATCHABLE_FIELDS">
+          <div class="demo-select-all-checkboxes" flex="100" ng-repeat="field in fields">
             <md-checkbox ng-checked="exists(field, selected)" ng-click="toggle(field, selected)">
               {{ field }}
             </md-checkbox>

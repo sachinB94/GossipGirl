@@ -17,4 +17,22 @@ router.get('/watching',
   middleware.sendResponse
 );
 
+router.get('/watching/:collection',
+  middleware.isAuthorized,
+  controller.getWatchersByWatcherIdAndCollection,
+  middleware.sendResponse
+);
+
+router.get('/',
+  // middleware.isAuthorized,
+  controller.getAllWatchers,
+  middleware.sendResponse
+);
+
+router.get('/fields',
+  middleware.isAuthorized,
+  controller.getFields,
+  middleware.sendResponse
+);
+
 module.exports = router;

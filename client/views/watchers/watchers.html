@@ -16,15 +16,48 @@
 
   <md-divider></md-divider>
 
-  <div layout="row" layout-wrap layout-margin>
-    <md-card ng-repeat="user in vm.users" ng-style="{'background-color': vm.getBackgroundColor(user._id)}" ng-click="vm.openSelectFieldDialog($event, user._id)">
-      <md-card-title>
-        <md-card-title-text>
-          <span class="md-headline">{{ user.name }}</span>
-          <span class="md-subhead">{{ user.email }}</span>
-        </md-card-title-text>
-      </md-card-title>
-    </md-card>
+  <div layout="column" layout-margin>
+    <div layout="row">
+      <md-input-container class="md-block" flex-gt-sm layout-margin>
+        <label>Select Collection to watch</label>
+        <md-select ng-model="vm.selectedCollection" ng-change="vm.selectCollection()" style="width:200px;">
+          <md-option ng-repeat="collection in vm.collections" value="{{collection}}">
+            {{collection}}
+          </md-option>
+        </md-select>
+      </md-input-container>
+
+      <md-input-container ng-if="vm.selectedCollection" class="md-block" flex-gt-sm layout-margin>
+        <md-button ng-style="{'background-color': vm.getSpecialBackgroundColor('insert')}" ng-click="vm.toggleSpecialWatcher('insert')"> Watch inserts on {{ vm.selectedCollection }} </md-button>
+      </md-input-container>
+
+      <md-input-container ng-if="vm.selectedCollection" class="md-block" flex-gt-sm layout-margin>
+        <md-button ng-style="{'background-color': vm.getSpecialBackgroundColor('delete')}" ng-click="vm.toggleSpecialWatcher('delete')"> Watch deletes on {{ vm.selectedCollection }} </md-button>
+      </md-input-container>
+
+    </div>
+    
+    <div ng-if="vm.selectedCollection === 'users'" layout="row" layout-wrap layout-margin>
+      <md-card ng-repeat="user in vm.list" ng-style="{'background-color': vm.getBackgroundColor(user._id)}" ng-click="vm.openSelectFieldDialog($event, user._id)">
+        <md-card-title>
+          <md-card-title-text>
+            <span class="md-headline">{{ user.name }}</span>
+            <span class="md-subhead">{{ user.email }}</span>
+          </md-card-title-text>
+        </md-card-title>
+      </md-card>
+    </div>
+
+    <div ng-if="vm.selectedCollection === 'watchers'" layout="row" layout-wrap layout-margin>
+      <md-card ng-repeat="watcher in vm.list" ng-style="{'background-color': vm.getBackgroundColor(watcher._id)}" ng-click="vm.openSelectFieldDialog($event, watcher._id)">
+        <md-card-title>
+          <md-card-title-text>
+            <span>{{ watcher.watcher.name }} -> <i>watching</i> -> {{ watcher.watching }}</span>
+            <span>for collection <i>{{ watcher.Collection }}</i></span>
+          </md-card-title-text>
+        </md-card-title>
+      </md-card>
+    </div>
   </div>
 
 </md-content>

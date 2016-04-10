@@ -26,6 +26,18 @@ angular.module('gossipGirl')
           }, function(err) {
             return next(err, null);
           });
+      },
+
+      findByWatcherAndCollection: function(collection, next) {
+        Restangular
+          .one('watchers')
+          .one('watching', collection)
+          .get()
+          .then(function(user) {
+            return next(null, user);
+          }, function(err) {
+            return next(err, null);
+          });
       }
     };
 

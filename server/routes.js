@@ -1,5 +1,6 @@
 'use strict';
 
+var mongoose = require('mongoose');
 var config = require('./config/environment');
 
 module.exports = function (app) {
@@ -9,11 +10,10 @@ module.exports = function (app) {
   app.use('/api/watchers', require('./api/watcher'));
   app.use('/api/users', require('./api/user'));
 
-  // Get health of server
-  app.route('/health')
+  app.route('/api/collections')
     .get(function(req, res) {
-      res.writeHead(200);
-      res.end();
+      var collections = Object.keys(mongoose.connections[0].collections);
+      res.send(collections);
     });
 
   // Static data

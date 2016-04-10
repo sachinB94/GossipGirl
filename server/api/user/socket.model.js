@@ -10,6 +10,10 @@ module.exports = {
     db.find(condition, next);
   },
 
+  findOne: function(condition, next) {
+    db.findOne(condition, next);
+  },
+
   remove: function(condition, next) {
     db.remove(condition, next);
   }
